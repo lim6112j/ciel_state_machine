@@ -1,0 +1,13 @@
+:host = localhost:5454
+
+:jType = application/json
+:form = application/x-www-form-urlencoded
+# inavi post api - not working
+POST http://:host/supply
+Content-type: :jType
+{
+		"supply_idx": 2,
+		"vehicle_plate_num": "54 가 1111"
+}
+#
+GET http://:host/supplies?supply_idx=1

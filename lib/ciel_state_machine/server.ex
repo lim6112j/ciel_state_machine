@@ -1,14 +1,15 @@
 defmodule CielStateMachine.Server do
 	use GenServer, restart: :temporary
-	@expiry_idle_timeout :timer.seconds(100)
+	@expiry_idle_timeout :timer.seconds(1000)
 	def start_link(state_id) do
-		GenServer.start_link(CeilStateMachine.Server,state_id, name: via_tuple(state_id))
+		IO.puts "starting server with state_id : #{state_id}"
+		GenServer.start_link(__MODULE__,state_id, name: via_tuple(state_id))
 	end
-	def add_entry(state_server, new_entry) do
-		GenServer.cast(state_server, {:add_entry, new_entry})
+	def add_entry(state_id, new_entry) do
+		GenServer.cast(via_tuple(state_id), {:add_entry, new_entry})
 	end
-	def entries(state_server) do
-		GenServer.call(state_server, {:entries})
+	def entries(state_id) do
+		GenServer.call(via_tuple(state_id), {:entries})
 	end
 
 	defp via_tuple(state_id) do

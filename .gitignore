@@ -24,3 +24,5 @@ ciel_state_machine-*.tar
 
 # Temporary files, for example, from tests.
 /tmp/
+
+persist/

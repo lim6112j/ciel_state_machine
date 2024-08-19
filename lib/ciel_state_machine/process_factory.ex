@@ -13,10 +13,13 @@ defmodule CielStateMachine.ProcessFactory do
 	def server_process(state_id) do
 		case start_child(state_id) do
 			{:ok, pid} -> pid
-			{:error, {:already_started, pid}} -> pid
+			{:error, {:already_started, pid}} ->
+				IO.puts "pid already exists"
+				pid
 		end
 	end
 	defp start_child(state_id) do
+		IO.puts "starting child #{state_id}"
 		DynamicSupervisor.start_child(__MODULE__, {CielStateMachine.Server, state_id})
 	end
 	def init(_) do

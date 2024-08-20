@@ -10,4 +10,4 @@ Content-type: :jType
 		"vehicle_plate_num": "54 가 1111"
 }
 #
-GET http://:host/supplies?supply_idx=1
+GET http://:host/supplies?supply_idx=2

@@ -39,7 +39,7 @@ defmodule CielStateMachine.Api do
     |> Plug.Conn.send_resp(200, Poison.encode!(%{response: entries}))
   end
 
-  get "/reverse_geocode" do
+  get "/v1/location/reverseGeocode" do
     posX = Map.fetch!(conn.params, "posX")
     posY = Map.fetch!(conn.params, "posY")
     url = @test_reverse_geocode_url <> "?posX=" <> posX <> "&posY=" <> posY
@@ -49,7 +49,7 @@ defmodule CielStateMachine.Api do
     |> Plug.Conn.send_resp(200, Poison.encode!(%{response: res.body}))
   end
 
-  get "geocode" do
+  get "/v1/location/poiSearch" do
     query = Map.fetch!(conn.params, "address")
     {:ok, res} = Req.get(@test_geocode_url, params: %{query: query}) # get!, get difference on response type
 

@@ -16,11 +16,11 @@ GET http://:host/supplies?supply_idx=2
 GET https://api-maps.cloud.toast.com/maps/v3.0/appkeys/6oBRFq52nuSZiAZf/addresses?posX=126.9717295&posY=37.55483949
 
 # reverse geocoding api
-GET http://:host/reverse_geocode?posX=126.9717295&posY=37.55483949
+GET http://:host/v1/location/reverseGeocode?posX=126.9717295&posY=37.55483949
 
 # inavi geocode
 GET https://api-maps.cloud.toast.com/maps/v3.0/appkeys/6oBRFq52nuSZiAZf/coordinates?query=서울 용산구 동자동 43-205
 
 # geocode
-GET http://:host/geocode?address=서울 용산구 동자동 43-205
+GET http://:host/v1/location/poiSearch?address=서울 용산구 동자동 43-205
 #

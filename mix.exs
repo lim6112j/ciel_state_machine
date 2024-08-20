@@ -27,6 +27,7 @@ defmodule CielStateMachine.MixProject do
 			{:poolboy, "~> 1.5"},
 			{:plug_cowboy, "~> 2.6"},
 			{:poison, "~> 4.0.1"},
+			{:req, "~> 0.5.6"}
     ]
   end
 end

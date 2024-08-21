@@ -1,4 +1,5 @@
 :host = localhost:5454
+:apiHost = http://59.23.220.84:8765/state-layer-service/v1
 
 :jType = application/json
 :form = application/x-www-form-urlencoded
@@ -23,4 +24,5 @@ GET https://api-maps.cloud.toast.com/maps/v3.0/appkeys/6oBRFq52nuSZiAZf/coordina
 
 # geocode
 GET http://:host/v1/location/poiSearch?address=서울 용산구 동자동 43-205
-#
+# api docs poi search
+GET :apiHost/v1/location/poiSearch??keyword=hello&latitude=1&longitude=1

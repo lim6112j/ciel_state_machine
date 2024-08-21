@@ -13,8 +13,11 @@ defmodule CielStateMachine.Store do
 		GenServer.cast(__MODULE__, {:remove_subscriber, ref})
 	end
 
-	def dispatch(action) do
-		GenServer.cast(__MODULE__, {:dispatch, action})
+	def dispatch(action, payload) do
+		GenServer.cast(__MODULE__, {:dispatch, action, payload})
+	end
+	def get_state do
+		GenServer.call(__MODULE__, {:get_state})
 	end
 
 	# callbacks
@@ -28,7 +31,7 @@ defmodule CielStateMachine.Store do
 
 	def init([reducer_map, nil]) when is_map(reducer_map), do: init([reducer_map, %{}])
 	def init([reducer_map, initial_state]) when is_map(reducer_map) do
-		store_state = CielStateMachine.CombineReducers.reduce(reducer_map, initial_state, @initialize_action)
+		store_state = CielStateMachine.CombineReducers.reduce(reducer_map, initial_state, @initialize_action, nil)
 		{:ok, %{reducer: reducer_map, store_state: store_state, subscribers: %{}}}
 	end
 
@@ -36,10 +39,14 @@ defmodule CielStateMachine.Store do
 		ref = make_ref()
 		{:reply, ref,  put_in(state, [:subscribers, ref], subscriber)}
 	end
-	def handle_cast({:dispatch, action}, state) when is_map(state.reducer) do
-		store_state = CielStateMachine.CombineReducers.reduce(state.reducer, state.store_state, action)
+	def handle_call({:get_state}, _from, state) do
+		{:reply, Map.get(state, :store_state), state}
+	end
+
+	def handle_cast({:dispatch, action, payload}, state) when is_map(state.reducer) do
+		store_state = CielStateMachine.CombineReducers.reduce(state.reducer, state.store_state, action, payload)
 		for {_ref, sub} <- state.subscribers, do: sub.(store_state)
-		{:noreply, Map.put(state, :state_store, store_state)}
+		{:noreply, Map.put(state, :store_state, store_state)}
 	end
 	def handle_cast({:remove_subscriber, ref}, state) do
 		subscribers = Map.delete(state.subscribers, ref)

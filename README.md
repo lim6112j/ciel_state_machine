@@ -33,3 +33,5 @@ CielStateMachine.Server.get_state(1) // 1 차량의 state 확인
 CielStateMachine.Store.dispatch(%{type: "UPDATE_CAR_LOCATION"}, [{1, %{lng: 127, lat: 37}}]) // 1 차량의 current_loc 업데이트
 
 CielStateMachine.Store.dispatch(%{type: "SET_WAYPOINTS"}, [{1, [1,2,3]}]) // 1 차량의 waypoints [1,2,3]으로 변경.
+
+Registry.select(CielStateMachine.ProcessRegistry, [{{:"$1", :_, :_}, [], [:"$1"]}])  // all registry keys

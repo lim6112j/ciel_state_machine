@@ -7,6 +7,7 @@ defmodule CielStateMachine.Api do
   @test_reverse_geocode_url "https://api-maps.cloud.toast.com/maps/v3.0/appkeys/6oBRFq52nuSZiAZf/addresses"
   @test_geocode_url "https://api-maps.cloud.toast.com/maps/v3.0/appkeys/6oBRFq52nuSZiAZf/coordinates"
   def child_spec(_arg) do
+		IO.puts "Api server starting with cowboy..."
     Plug.Cowboy.child_spec(
       scheme: :http,
       options: [port: @port],

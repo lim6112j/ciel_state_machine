@@ -4,7 +4,8 @@ defmodule CielStateMachine.Supervisor do
 			CielStateMachine.ProcessRegistry,
 			CielStateMachine.Database,
 			CielStateMachine.ProcessFactory,
-			CielStateMachine.Api
+			CielStateMachine.Api,
+			CielStateMachine.Store,
 		], strategy: :one_for_one)
 	end
 end

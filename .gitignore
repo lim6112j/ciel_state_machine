@@ -26,3 +26,5 @@ ciel_state_machine-*.tar
 /tmp/
 
 persist/
+
+.idea

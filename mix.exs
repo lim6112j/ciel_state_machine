@@ -8,7 +8,15 @@ defmodule CielStateMachine.MixProject do
       version: "0.1.0",
       elixir: "~> 1.16",
       start_permanent: Mix.env() == :prod,
-      deps: deps()
+      deps: deps(),
+			test_coverage: [tool: ExCoveralls],
+			preferred_cli_env: [
+				coveralls: :test,
+				"coveralls.detail": :test,
+				"coveralls.post": :test,
+				"coveralls.html": :test,
+				"coveralls.cobertura": :test
+			]
     ]
   end
 
@@ -32,6 +40,7 @@ defmodule CielStateMachine.MixProject do
 			{:ex_doc, "~> 0.31", only: :dev, runtime: false},
 			{:inch_ex, github: "rrrene/inch_ex", only: [:dev, :test]},
 			{:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
+  		{:excoveralls, "~> 0.18", only: :test},
     ]
   end
 	def aliases do
@@ -39,7 +48,7 @@ defmodule CielStateMachine.MixProject do
 			generate_docs: [
 				"docs",
 				"inch"
-			]
+			],
 		]
 	end
 

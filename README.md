@@ -20,6 +20,11 @@ mix run --no-halt
 
 mix generate_docs
 
+
+# test
+
+MIX_ENV=test mix coveralls
+
 # how to use
 
 restclient 폴더 apitest 파일 참조 , curl 사용

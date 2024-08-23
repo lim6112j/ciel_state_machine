@@ -2,6 +2,11 @@
 
 ciel state layer system
 
+# install dependencies
+
+```sh
+mix deps.get
+```
 
 # how to run
 
@@ -29,7 +34,7 @@ Registry.lookup(CielStateMachine.ProcessRegistry, {CielStateMachine.Server, 1}) 
 
 CielStateMachine.Store.get_state  // 현재 state를 확인 (supply list , demand list), 디테일한 정보는 각 server가 가지고 있음.
 
-CielStateMachine.Server.add_entry(1, %{waypoints: [1,2,3]} // supply_idx = 1인 차량의 waypoints 추가
+CielStateMachine.Server.add_entry(1, %{waypoints: [1,2,3]}) // supply_idx = 1인 차량의 waypoints 추가
 
 
 CielStateMachine.Server.get_state(1) // 1 차량의 state 확인

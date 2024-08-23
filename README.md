@@ -11,6 +11,10 @@ or
 
 mix run --no-halt
 
+# generate docs
+
+mix generate_docs
+
 # how to use
 
 restclient 폴더 apitest 파일 참조 , curl 사용

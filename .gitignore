@@ -26,5 +26,6 @@ ciel_state_machine-*.tar
 /tmp/
 
 persist/
+.DS_Store
 
 .idea

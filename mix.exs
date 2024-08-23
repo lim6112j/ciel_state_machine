@@ -4,6 +4,7 @@ defmodule CielStateMachine.MixProject do
   def project do
     [
       app: :ciel_state_machine,
+			aliases: aliases(),
       version: "0.1.0",
       elixir: "~> 1.16",
       start_permanent: Mix.env() == :prod,
@@ -27,7 +28,18 @@ defmodule CielStateMachine.MixProject do
 			{:poolboy, "~> 1.5"},
 			{:plug_cowboy, "~> 2.6"},
 			{:poison, "~> 4.0.1"},
-			{:req, "~> 0.5.6"}
+			{:req, "~> 0.5.6"},
+			{:ex_doc, "~> 0.31", only: :dev, runtime: false},
+			{:inch_ex, github: "rrrene/inch_ex", only: [:dev, :test]},
     ]
   end
+	def aliases do
+		[
+			generate_docs: [
+				"docs",
+				"inch"
+			]
+		]
+	end
+
 end

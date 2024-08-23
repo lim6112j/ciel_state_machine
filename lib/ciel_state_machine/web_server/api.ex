@@ -138,7 +138,7 @@ defmodule CielStateMachine.Api do
 
   post "/v1/dispatch/available-vehicles" do
     {:ok, body, conn} = read_body(conn)
-    params = Poison.decode!(body)
+    _params = Poison.decode!(body)
 
     response = %{
       resultCode: "Ok",
@@ -164,7 +164,7 @@ defmodule CielStateMachine.Api do
 
   post "/v1/dispatch/request-vehicle" do
     case conn.body_params do
-      %{} = params ->
+      %{} = _params ->
         # Implement vehicle request logic here
         # For now, we'll return a mock response
         response = %{
@@ -210,7 +210,7 @@ defmodule CielStateMachine.Api do
 
   post "/v1/dispatch/confirm-vehicle" do
     case conn.body_params do
-      %{"demandId" => demand_id} = params ->
+      %{"demandId" => demand_id} = _params ->
         # Implement vehicle confirmation logic here
         # For now, we'll return a mock response
         response = %{
@@ -297,7 +297,7 @@ defmodule CielStateMachine.Api do
   end
 
   get "/v1/vehicle/eta" do
-    vehicle_id = Map.get(conn.params, "vehicleId")
+    _vehicle_id = Map.get(conn.params, "vehicleId")
 
     response = %{
       resultCode: "Ok",

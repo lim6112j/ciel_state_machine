@@ -1,13 +1,23 @@
 defmodule CielStateMachine.Store do
+	@moduledoc """
+	Store works as singleton with name __MODULE__
+	state : %{reducer: %{}, state: %{}, subscribers: %{}}
+	"""
 	@initialize_action %{type: "@@INIT"}
 	use GenServer
 	def start_link(reducer, initial_state \\ nil) do
 		IO.puts "state store starting with reducer : #{inspect(reducer)}"
 		GenServer.start_link(__MODULE__, [reducer, initial_state], name: __MODULE__)
 	end
+	@doc """
+	when action specified, subscription works on the specific action,
 
-	def subscribe(subscriber) do
-		GenServer.call(__MODULE__, {:subscribe, subscriber})
+  if action == nil, all action will be triggered on the subscription.
+
+	action specification works as filter
+	"""
+	def subscribe(subscriber, action \\ nil) do
+		GenServer.call(__MODULE__, {:subscribe, {subscriber, action}})
 	end
 	def remove_subscriber(ref) do
 		GenServer.cast(__MODULE__, {:remove_subscriber, ref})
@@ -35,9 +45,9 @@ defmodule CielStateMachine.Store do
 		{:ok, %{reducer: reducer_map, store_state: store_state, subscribers: %{}}}
 	end
 
-	def handle_call({:subscribe, subscriber}, _from, state) do
+	def handle_call({:subscribe, sub}, _from, state) do
 		ref = make_ref()
-		{:reply, ref,  put_in(state, [:subscribers, ref], subscriber)}
+		{:reply, ref,  put_in(state, [:subscribers, ref], sub)}
 	end
 	def handle_call({:get_state}, _from, state) do
 		{:reply, Map.get(state, :store_state), state}
@@ -45,7 +55,20 @@ defmodule CielStateMachine.Store do
 
 	def handle_cast({:dispatch, action, payload}, state) when is_map(state.reducer) do
 		store_state = CielStateMachine.CombineReducers.reduce(state.reducer, state.store_state, action, payload)
-		for {_ref, sub} <- state.subscribers, do: sub.(store_state)
+		for {_ref, sub} <- state.subscribers do
+				case sub do
+					{fun, nil} ->
+						IO.puts "\n fun(1), action #{inspect(action)}"
+						fun.(store_state)
+					{fun, sub_action} when sub_action == action ->
+						IO.puts "\n fun(2), action #{inspect(action)}"
+						fun.(store_state, sub_action)
+					_ -> :ok
+				end
+
+
+		end
+
 		{:noreply, Map.put(state, :store_state, store_state)}
 	end
 	def handle_cast({:remove_subscriber, ref}, state) do

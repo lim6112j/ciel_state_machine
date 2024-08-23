@@ -31,6 +31,7 @@ defmodule CielStateMachine.MixProject do
 			{:req, "~> 0.5.6"},
 			{:ex_doc, "~> 0.31", only: :dev, runtime: false},
 			{:inch_ex, github: "rrrene/inch_ex", only: [:dev, :test]},
+			{:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
     ]
   end
 	def aliases do

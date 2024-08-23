@@ -17,46 +17,71 @@ defmodule CielStateMachineTest do
   # end
 
   test "state machine create server when needed -- no sync problem- subscriber with/without action" do
-    CielStateMachine.Store.subscribe(
-      fn _state ->
+    ref =
+      CielStateMachine.Store.subscribe(fn _state ->
         [{pid, _}] =
           Registry.lookup(CielStateMachine.ProcessRegistry, {CielStateMachine.Server, 2})
+
         IO.puts("\n ************ subscription called no action")
         assert is_pid(pid) == true
-      end
-    )
-    CielStateMachine.Store.subscribe(
-      fn _state, _action ->
-        [{pid, _}] =
-          Registry.lookup(CielStateMachine.ProcessRegistry, {CielStateMachine.Server, 2})
-        IO.puts("\n ************ subscription called with matched action")
-        assert is_pid(pid) == true
-      end,
-			%{type: "ADD_VEHICLE"}
-    )
-    CielStateMachine.Store.subscribe(
-      fn _state, _action ->
-        [{pid, _}] =
-          Registry.lookup(CielStateMachine.ProcessRegistry, {CielStateMachine.Server, 2})
-        IO.puts("\n ************ subscription called with unmatched action")
-        assert is_pid(pid) == true
-      end,
-			%{type: "NOT_MATCHED"}
-    )
+      end)
+
+    ref2 =
+      CielStateMachine.Store.subscribe(
+        fn _state, _action ->
+          [{pid, _}] =
+            Registry.lookup(CielStateMachine.ProcessRegistry, {CielStateMachine.Server, 2})
+
+          IO.puts("\n ************ subscription called with matched action")
+          assert is_pid(pid) == true
+        end,
+        %{type: "ADD_VEHICLE"}
+      )
+
+    ref3 =
+      CielStateMachine.Store.subscribe(
+        fn _state, _action ->
+          [{pid, _}] =
+            Registry.lookup(CielStateMachine.ProcessRegistry, {CielStateMachine.Server, 2})
+
+          IO.puts("\n ************ subscription called with unmatched action")
+          assert is_pid(pid) == true
+        end,
+        %{type: "NOT_MATCHED"}
+      )
 
     CielStateMachine.Store.dispatch(%{type: "ADD_VEHICLE"}, 2)
+    CielStateMachine.Store.remove_subscriber(ref)
+    CielStateMachine.Store.remove_subscriber(ref2)
+    CielStateMachine.Store.remove_subscriber(ref3)
+    store_state = CielStateMachine.Store.get_state()
+    IO.puts("\n **** store state = #{inspect(store_state)}")
+    assert store_state
+    |> Map.get(:subscribers) == %{}
   end
 
   test "state machine subscriber" do
-    CielStateMachine.Store.subscribe(fn state ->
-      IO.puts("subscriber got called with state #{inspect(state)}")
-      CielStateMachine.Server.update_location(3, %{lng: 124, lat: 37})
+    ref = CielStateMachine.Store.subscribe(
+      fn _state, _action ->
+        assert CielStateMachine.Server.get_state(2)
+               |> Map.fetch!(:current_loc)
+               |> Map.fetch!(:lng) == 127
+      end,
+      %{type: "UPDATE_CAR_LOCATION"}
+    )
 
-      assert CielStateMachine.Server.get_state(3) |> Map.fetch!(:current_loc) |> Map.fetch!(:lng) ==
-               124
-    end)
+    CielStateMachine.Store.dispatch(%{type: "UPDATE_CAR_LOCATION"}, [{2, %{lng: 127, lat: 37}}])
+		CielStateMachine.Store.remove_subscriber(ref)
+  end
 
-    # supply_idx 1 vehicle add
-    CielStateMachine.Store.dispatch(%{type: "ADD_VEHICLE"}, 3)
+  test "state machine state" do
+    CielStateMachine.Store.dispatch(%{type: "ADD_VEHICLE"}, "supply_id_1")
+    store_state = CielStateMachine.Store.get_state()
+    assert store_state
+           |> Map.get(:store_state)
+           |> Map.get(:supply)
+           |> Map.get(:supply_ids)
+           |> Enum.any?(&(&1 == "supply_id_1")) ==
+             true
   end
 end

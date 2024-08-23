@@ -50,7 +50,7 @@ defmodule CielStateMachine.Store do
 		{:reply, ref,  put_in(state, [:subscribers, ref], sub)}
 	end
 	def handle_call({:get_state}, _from, state) do
-		{:reply, Map.get(state, :store_state), state}
+		{:reply, state, state}
 	end
 
 	def handle_cast({:dispatch, action, payload}, state) when is_map(state.reducer) do

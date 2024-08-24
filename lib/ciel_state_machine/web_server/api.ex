@@ -16,21 +16,34 @@ defmodule CielStateMachine.Api do
       plug: __MODULE__
     )
   end
+	get "/ping" do
+		conn
+		|> Plug.Conn.send_resp(200, "pong!")
+	end
 
   post "/supply" do
     {:ok, _, conn} = Plug.Conn.read_body(conn)
-    IO.puts("\n encoded body: #{inspect(conn.params)}")
-    supply_idx = Map.fetch!(conn.params, "supply_idx")
-    vehicle_plate_num = Map.fetch!(conn.params, "vehicle_plate_num")
-    CielStateMachine.ProcessFactory.server_process(supply_idx)
+    # IO.puts("\n encoded body: #{inspect(conn)}")
+		case conn.body_params do
+			%{"supply_idx" => supply_idx, "vehicle_plate_num" => vehicle_plate_num} ->
+			#	CielStateMachine.ProcessFactory.server_process(supply_idx)
+				dispatch_action = %{type: "ADD_VEHICLE"}
+				subscriber = fn _state, _action ->
+					CielStateMachine.Server.add_entry(supply_idx, %{
+								supply_idx: supply_idx,
+								vehicle_plate_num: vehicle_plate_num
+																						})
 
-    CielStateMachine.Server.add_entry(supply_idx, %{
-      supply_idx: supply_idx,
-      vehicle_plate_num: vehicle_plate_num
-    })
-
-    conn
-    |> Plug.Conn.send_resp(200, "OK")
+				end
+				ref = CielStateMachine.Store.subscribe(subscriber, dispatch_action)
+				CielStateMachine.Store.dispatch(dispatch_action, supply_idx)
+				CielStateMachine.Store.remove_subscriber(ref)
+				conn
+				|> Plug.Conn.send_resp(200, "OK")
+			_ ->
+				conn |>
+					Plug.Conn.send_resp(422, Poison.encode!(%{response: "wrong params"}))
+		end
   end
 
   get "/supplies" do

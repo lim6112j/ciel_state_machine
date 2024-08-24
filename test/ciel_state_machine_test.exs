@@ -66,7 +66,7 @@ defmodule CielStateMachineTest do
     CielStateMachine.Store.remove_subscriber(ref2)
     CielStateMachine.Store.remove_subscriber(ref3)
     store_state = CielStateMachine.Store.get_state()
-    IO.puts("\n **** store state = #{inspect(store_state)}")
+    # IO.puts("\n **** store state = #{inspect(store_state)}")
 
     assert store_state
            |> Map.get(:subscribers) == %{}

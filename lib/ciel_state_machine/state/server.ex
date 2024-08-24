@@ -66,10 +66,18 @@ defmodule CielStateMachine.Server do
 		IO.puts "idle expire timeout, process exiting: #{state_id}"
 		{:stop, :normal, {state_id, state}}
 	end
-	def handle_events(events, _from, state) do
+	def handle_events(events, _from, {state_id, state}) do
 		for event <- events do
-				IO.inspect {self(), event, state}
+				case event do
+					{:update_current_loc, loc} ->
+						update_location(state_id, loc)
+						IO.inspect {self(), event, state, state_id}
+					_ -> {:noreply, [], {state_id, state}}
+
+				end
+
+
 		end
-		{:noreply, [], state}
+		{:noreply, [], {state_id, state}}
 	end
 end

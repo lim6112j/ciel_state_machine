@@ -20,7 +20,7 @@ defmodule CielStateMachine.Producer do
 		{:noreply, events, state}
 	end
 
-	def handle_demand(demand, state) do
+	def handle_demand(_demand, state) do
 		{:noreply, [], state}
 	end
 

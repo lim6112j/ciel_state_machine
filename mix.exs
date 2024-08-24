@@ -42,6 +42,7 @@ defmodule CielStateMachine.MixProject do
 			{:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
   		{:excoveralls, "~> 0.18", only: :test},
 		  {:mock, "~> 0.3.0", only: :test},
+			{:gen_stage, "~> 1.2.1"},
     ]
   end
 	def aliases do

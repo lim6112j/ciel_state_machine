@@ -22,8 +22,4 @@ defmodule CielStateMachine.List do
 	def entries(state) do
 		state.entries |> Map.values()
 	end
-	def get_state(state) do
-		state
-	end
-
 end

@@ -166,4 +166,15 @@ defmodule CielStateMachineTest do
     CielStateMachine.Store.dispatch(%{type: "ADD_VEHICLE"}, "supply_idx_3")
     CielStateMachine.Store.remove_subscriber(ref)
   end
+	# below test have issue. state won't be updated with get_state function
+	# test "producer trigger server event-handler test" do
+	# 	CielStateMachine.ProcessFactory.server_process(1)
+	# 	CielStateMachine.Server.get_state(1)
+	# 	CielStateMachine.Store.dispatch(%{type: "ADD_VEHICLE"}, 1)
+	# 	CielStateMachine.Producer.add([{:update_current_loc, %{lng: 12, lat: 11}}])
+	# 	res = CielStateMachine.Server.get_state(1)
+
+	# 	assert res == %{lng: 11, lat: 11}
+	# end
+
 end

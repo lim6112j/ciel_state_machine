@@ -41,6 +41,7 @@ defmodule CielStateMachine.MixProject do
 			{:inch_ex, github: "rrrene/inch_ex", only: [:dev, :test]},
 			{:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
   		{:excoveralls, "~> 0.18", only: :test},
+		  {:mock, "~> 0.3.0", only: :test},
     ]
   end
 	def aliases do

@@ -44,11 +44,13 @@ defmodule CielStateMachine.Server do
 
   def handle_cast({:update_location, loc}, {state_id, state}) do
     new_state = CielStateMachine.List.update_entry(state, loc)
+    CielStateMachine.Database.store(state_id, new_state)
     {:noreply, [], {state_id, new_state}}
   end
 
   def handle_cast({:set_waypoints, waypoints}, {state_id, state}) do
     new_state = CielStateMachine.List.set_waypoints(state, waypoints)
+    CielStateMachine.Database.store(state_id, new_state)
     {:noreply, [], {state_id, new_state}}
   end
 
@@ -81,6 +83,7 @@ defmodule CielStateMachine.Server do
     case event do
       {:update_current_loc, loc} ->
         new_state = CielStateMachine.List.update_entry(state, loc)
+				CielStateMachine.Database.store(state_id, new_state)
         {:noreply, rest, {state_id, new_state}}
 
       _ ->

@@ -166,7 +166,7 @@ defmodule CielStateMachineTest do
     CielStateMachine.Store.dispatch(%{type: "ADD_VEHICLE"}, "supply_idx_3")
     CielStateMachine.Store.remove_subscriber(ref)
   end
-	# below test have issue. state won't be updated with get_state function
+	# TODO below test have issue. state won't be updated with get_state function, producer state won't be applied in test , maybe bug?
 	# test "producer trigger server event-handler test" do
 	# 	CielStateMachine.ProcessFactory.server_process(1)
 	# 	CielStateMachine.Server.get_state(1)

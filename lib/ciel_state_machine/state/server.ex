@@ -85,7 +85,10 @@ defmodule CielStateMachine.Server do
         new_state = CielStateMachine.List.update_entry(state, loc)
 				CielStateMachine.Database.store(state_id, new_state)
         {:noreply, rest, {state_id, new_state}}
-
+			{:set_waypoints, waypoints} ->
+		    new_state = CielStateMachine.List.set_waypoints(state, waypoints)
+				CielStateMachine.Database.store(state_id, new_state)
+        {:noreply, rest, {state_id, new_state}}
       _ ->
         {:noreply, rest, {state_id, state}}
     end

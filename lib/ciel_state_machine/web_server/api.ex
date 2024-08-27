@@ -1,5 +1,7 @@
 defmodule CielStateMachine.Api do
   use Plug.Router
+  alias CielStateMachine.Logger
+
   plug(:match)
   plug(Plug.Parsers, parsers: [:json], pass: ["application/json"], json_decoder: Poison)
   plug(:dispatch)
@@ -9,21 +11,23 @@ defmodule CielStateMachine.Api do
   @test_geocode_url "https://api-maps.cloud.toast.com/maps/v3.0/appkeys/6oBRFq52nuSZiAZf/coordinates"
 
   def child_spec(_arg) do
-		IO.puts "Api server starting with cowboy..."
+    Logger.info("Api server starting with cowboy...")
     Plug.Cowboy.child_spec(
       scheme: :http,
       options: [port: @port],
       plug: __MODULE__
     )
   end
-	get "/ping" do
-		conn
-		|> Plug.Conn.send_resp(200, "pong!")
-	end
+
+  get "/ping" do
+    Logger.debug("Received ping request")
+    conn
+    |> Plug.Conn.send_resp(200, "pong!")
+  end
 
   post "/supply" do
     {:ok, _, conn} = Plug.Conn.read_body(conn)
-    # IO.puts("\n encoded body: #{inspect(conn)}")
+    # Logger.info("\n encoded body: #{inspect(conn)}")
 		case conn.body_params do
 			%{"supply_idx" => supply_idx, "vehicle_plate_num" => vehicle_plate_num} ->
 			#	CielStateMachine.ProcessFactory.server_process(supply_idx)
@@ -48,7 +52,7 @@ defmodule CielStateMachine.Api do
 
   get "/supplies" do
     supply_idx = Map.fetch!(conn.params, "supply_idx")
-    IO.puts("supply idx from get request = #{supply_idx}")
+    Logger.info("supply idx from get request = #{supply_idx}")
     entries = CielStateMachine.Server.entries(supply_idx)
 
     conn

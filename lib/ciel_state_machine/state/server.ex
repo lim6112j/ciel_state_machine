@@ -1,8 +1,9 @@
 defmodule CielStateMachine.Server do
   use GenStage, restart: :temporary
+  alias CielStateMachine.Logger
 
   def start_link(state_id) do
-    IO.puts("starting server with state_id : #{state_id}")
+    Logger.info("starting server with state_id : #{state_id}")
     GenStage.start_link(__MODULE__, state_id, name: via_tuple(state_id))
   end
 
@@ -73,7 +74,7 @@ defmodule CielStateMachine.Server do
   end
 
   def handle_info(:timeout, {state_id, state}) do
-    #    IO.puts("idle expire timeout, process exiting: #{state_id}")
+    #    Logger.info("idle expire timeout, process exiting: #{state_id}")
     {:stop, :normal, {state_id, state}}
   end
 

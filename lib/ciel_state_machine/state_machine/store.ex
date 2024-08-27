@@ -5,8 +5,10 @@ defmodule CielStateMachine.Store do
 	"""
 	@initialize_action %{type: "@@INIT"}
 	use GenServer
-	def start_link(reducer, initial_state \\ nil) do
-		IO.puts "state store starting with reducer : #{inspect(reducer)}"
+  alias CielStateMachine.Logger
+
+  def start_link(reducer, initial_state \\ nil) do
+		Logger.info "state store starting with reducer : #{inspect(reducer)}"
 		GenServer.start_link(__MODULE__, [reducer, initial_state], name: __MODULE__)
 	end
 	@doc """
@@ -58,10 +60,10 @@ defmodule CielStateMachine.Store do
 		for {_ref, sub} <- state.subscribers do
 				case sub do
 					{fun, nil} ->
-						IO.puts "\n fun(1), action #{inspect(action)}"
+						Logger.info "\n fun(1), action #{inspect(action)}"
 						fun.(store_state)
 					{fun, sub_action} when sub_action == action ->
-						IO.puts "\n fun(2), action #{inspect(action)}"
+						Logger.info "\n fun(2), action #{inspect(action)}"
 						fun.(store_state, sub_action)
 					_ -> :ok
 				end

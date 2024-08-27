@@ -43,6 +43,7 @@ defmodule CielStateMachine.MixProject do
   		{:excoveralls, "~> 0.18", only: :test},
 		  {:mock, "~> 0.3.0", only: :test},
 			{:gen_stage, "~> 1.2.1"},
+      {:logger_file_backend, "~> 0.0.14"},
     ]
   end
 	def aliases do

@@ -1,5 +1,7 @@
 defmodule CielStateMachine.Database do
 	use GenServer
+  alias CielStateMachine.Logger
+
 	@pool_size 3
 	@db_folder "./persist"
 	def child_spec(_) do
@@ -28,7 +30,7 @@ defmodule CielStateMachine.Database do
 		)
 	end
 	def init(@db_folder) do
-		IO.puts "Starting databse ..."
+    Logger.info("Starting databse ...")
 		{:ok, @db_folder}
 	end
 

@@ -16,6 +16,28 @@ or
 
 mix run --no-halt
 
+# how to handle business logic
+
+reducer를 별도로 관리한다. action은 같고 reducer에 의해 처리되는 로직이 다르다.
+
+추가되는 action이 있을 수도 있으나, 문제 없을 듯.
+
+e.g. 서비스 지역별 비즈니스 로직이 다르면
+
+busan_reducer를 만들고 store 실행시 busan_reducer만 추가해서 실행한다.
+
+e.g. version별로 비즈니스 로직이 다르면
+
+v1_reducer, v2_reducer를 각 구성하고 store실행시 선택해서 실행한다.
+
+
+type 1: 단일한 서비스 시나리오만을 처리하고, 별도 지역이나 버전은 새로운 서버를 실행해얀한다.
+
+또는
+
+type 2 : 각 reducer에 필요한 action 이름에 버전이나 지역명을 추가하는 방식 -- 여러 시나리오를 동시에 처리할 수 있다.
+
+
 # generate docs
 
 mix generate_docs

@@ -1,6 +1,8 @@
 defmodule CielStateMachine.DatabaseWorker do
 	use GenServer
-	def start_link(db_folder) do
+  alias CielStateMachine.Logger
+
+  def start_link(db_folder) do
 		GenServer.start_link(__MODULE__, db_folder)
 	end
 	def store(pid, key, data) do
@@ -12,7 +14,7 @@ defmodule CielStateMachine.DatabaseWorker do
 	# callbacks
 
 	def init(db_folder) do
-		IO.puts "Starting database worker"
+		Logger.info "Starting database worker"
 		{:ok, db_folder}
 	end
 	def handle_cast({:store, key, data}, db_folder) do

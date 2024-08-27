@@ -1,6 +1,8 @@
 defmodule CielStateMachine.ProcessRegistry do
-	def start_link do
-		IO.puts "Registry Starting ..."
+  alias CielStateMachine.Logger
+
+  def start_link do
+    Logger.info "Registry Starting ..."
 		Registry.start_link(keys: :unique, name: __MODULE__)
 	end
 	def via_tuple(key) do

@@ -16,6 +16,22 @@ or
 
 mix run --no-halt
 
+
+# Business logic process
+
+지역별, 서비스별 동일 action에 대해 다른 state 처리가 필요한 경우
+
+config에 service를 추가하면, 해당 서비스에 해당하는 reducer만을 로드하여 서버 기동
+
+```
+config :ciel_state_machine, :business_logic, service: :test
+```
+
+이방식은 서비스별로 별도의 서버를 실행 해야한다. elixir 특성상 문제는 아닌 듯 하다.
+
+
+
+
 # how to handle business logic
 
 reducer를 별도로 관리한다. action은 같고 reducer에 의해 처리되는 로직이 다르다.

@@ -38,7 +38,7 @@ defmodule CielStateMachine.Store do
   # callbacks
   def child_spec(arg) do
     case arg do
-      [:test] ->
+      :test ->
         %{
           id: __MODULE__,
           start: {__MODULE__, :start_link, [%{supply: CielStateMachine.TestReducer}]}

@@ -20,7 +20,7 @@ defmodule CielStateMachine.Supervisor do
       CielStateMachine.Database,
       CielStateMachine.ProcessFactory,
       CielStateMachine.Api,
-			{CielStateMachine.Store, [service]},
+			{CielStateMachine.Store, service},
     ]
 		case rtkOn do
 			:on ->

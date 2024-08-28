@@ -16,7 +16,8 @@ defmodule CielStateMachine.Supervisor do
       CielStateMachine.Database,
       CielStateMachine.ProcessFactory,
       CielStateMachine.Api,
-      CielStateMachine.Store
+      CielStateMachine.Store,
+			CielStateMachine.Rtk
     ]
 
     Supervisor.init(children, strategy: :one_for_one)

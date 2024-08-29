@@ -29,7 +29,9 @@ config :ciel_state_machine, :business_logic, service: :test
 
 이방식은 서비스별로 별도의 서버를 실행 해야한다. elixir 특성상 문제는 아닌 듯 하다.
 
+모든 business logic dictionary는 lib/ciel_state_machine/business_logic/business_logic.ex에서 정의된다.
 
+여기에 정의된 비즈니스 키를 config에서 세팅함으로써 비즈니스 로직이 결정된다.
 
 
 # how to handle business logic

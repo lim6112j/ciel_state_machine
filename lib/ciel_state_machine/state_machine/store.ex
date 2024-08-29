@@ -37,11 +37,12 @@ defmodule CielStateMachine.Store do
 
   # callbacks
   def child_spec(arg) do
+		businessLogics = CielStateMachine.BusinessLogic.businessLogics
     case arg do
       :test ->
         %{
           id: __MODULE__,
-          start: {__MODULE__, :start_link, [%{supply: CielStateMachine.TestReducer}]}
+          start: {__MODULE__, :start_link, [%{supply: Map.get(businessLogics, arg)}]}
         }
 
       _ ->

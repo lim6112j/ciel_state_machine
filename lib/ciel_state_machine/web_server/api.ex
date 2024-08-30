@@ -1,6 +1,8 @@
 defmodule CielStateMachine.Api do
   use Plug.Router
   alias CielStateMachine.Logger
+  alias CielStateMachine.RoutingRequestValidator
+  alias CielStateMachine.RoutingService
 
   plug(:match)
   plug(Plug.Parsers, parsers: [:json], pass: ["application/json"], json_decoder: Poison)
@@ -77,79 +79,77 @@ defmodule CielStateMachine.Api do
     |> Plug.Conn.send_resp(200, Poison.encode!(%{response: res.body}))
   end
 
-
   post "/v1/routing/direction" do
+    Logger.debug("Received routing direction request")
+    Logger.debug("Request headers: #{inspect(conn.req_headers)}")
+
+    {:ok, raw_body, conn} = Plug.Conn.read_body(conn)
+    Logger.debug("Raw request body: #{inspect(raw_body)}")
+    Logger.debug("Parsed body params: #{inspect(conn.body_params)}")
+
     case conn.body_params do
-      %{} = params ->
-        # Implement routing logic here
-        # For now, we'll return a mock response
-        response = %{
-          resultCode: "Ok",
-          result: [
-            %{
-              code: "Ok",
-              routes: [
-                %{
-                  distance: 5000,
-                  duration: 1200,
-                  geometry: "mock_encoded_polyline",
-                  legs: [
-                    %{
-                      distance: 5000,
-                      duration: 1200,
-                      summary: "Mock Route",
-                      steps: [
-                        %{
-                          distance: 5000,
-                          duration: 1200,
-                          geometry: "mock_step_polyline",
-                          name: "Mock Road",
-                          mode: "driving",
-                          instruction: "Drive straight ahead",
-                          maneuver: %{
-                            location: %{latitude: 37.5, longitude: 127.0},
-                            type: "depart",
-                            modifier: "straight"
-                          },
-                          intersections: []
-                        }
-                      ],
-                      annotation: %{
-                        distance: [5000],
-                        duration: [1200],
-                        datasource: [0],
-                        nodes: [1234, 5678]
-                      }
-                    }
-                  ],
-                  weight: 1200,
-                  weight_name: "duration"
-                }
-              ],
-              waypoints: [
-                %{
-                  name: "Start",
-                  location: %{latitude: params["origin"]["latitude"], longitude: params["origin"]["longitude"]},
-                  waypointType: "break"
-                },
-                %{
-                  name: "End",
-                  location: %{latitude: params["destination"]["latitude"], longitude: params["destination"]["longitude"]},
-                  waypointType: "break"
-                }
-              ]
-            }
-          ]
-        }
+      params when map_size(params) == 0 ->
+        Logger.error("Empty request body")
 
         conn
         |> put_resp_content_type("application/json")
-        |> send_resp(200, Poison.encode!(response))
+        |> send_resp(400, Poison.encode!(%{error: "Empty request body"}))
 
-      _ ->
+      params ->
+        process_routing_request(conn, params)
+    end
+  end
+
+  defp process_routing_request(conn, params) do
+    case RoutingRequestValidator.validate_request(params) do
+      {:ok, validated_params} ->
+        Logger.debug("Request validation successful", validated_params: validated_params)
+
+        external_request_body =
+          CielStateMachine.RoutingRequestValidator.to_external_request_body(validated_params)
+
+        Logger.debug("Prepared request body for external API", request_body: external_request_body)
+
+        # Call external routing API(our dispatch service engine)
+        case RoutingService.call_external_routing_api(external_request_body) do
+          {:ok, external_response} ->
+            Logger.debug("Received successful response from external API",
+              response: external_response
+            )
+
+            converted_response = RoutingService.convert_response(external_response)
+
+            Logger.debug("Transformed #{inspect(converted_response)} external API response",
+              converted_response: inspect(converted_response)
+            )
+
+            conn
+            |> put_resp_content_type("application/json")
+            |> send_resp(200, Poison.encode!(converted_response))
+
+          {:error, %Req.TransportError{reason: reason}} ->
+            error_message = "External API call failed due to transport error: #{inspect(reason)}"
+            Logger.error(error_message)
+
+            conn
+            |> put_resp_content_type("application/json")
+            |> send_resp(500, Poison.encode!(%{error: error_message}))
+
+          {:error, reason} ->
+            error_message = "Routing calculation failed: #{inspect(reason)}"
+            Logger.error(error_message)
+
+            conn
+            |> put_resp_content_type("application/json")
+            |> send_resp(500, Poison.encode!(%{error: error_message}))
+        end
+
+      {:error, reason} ->
+        Logger.error("Request validation failed", reason: reason)
+
         conn
         |> put_resp_content_type("application/json")
-        |> send_resp(400, Poison.encode!(%{error: "Invalid request body"}))
+        |> send_resp(400, Poison.encode!(%{error: reason}))
     end
   end
 
@@ -176,7 +176,6 @@ defmodule CielStateMachine.Api do
     conn
     |> put_resp_content_type("application/json")
     |> send_resp(200, Poison.encode!(response))
-
   end
 
   post "/v1/dispatch/request-vehicle" do

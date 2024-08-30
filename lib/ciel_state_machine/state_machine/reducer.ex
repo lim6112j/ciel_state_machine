@@ -45,3 +45,18 @@ defmodule CielStateMachine.SupplyReducer do
 	end
 
 end
+defmodule CielStateMachine.TestReducer do
+	alias CielStateMachine.Logger
+  @behaviour CielStateMachine.Reducer
+	def reduce( nil, action), do: reduce( %{}, action, nil)
+	def reduce(state, action, payload \\ nil), do: do_reduce(state, action, payload)
+	defp do_reduce(state, action, _payload) do
+		case action do
+			%{type: "@@INIT"} ->
+				state = %{supply_ids: [], demand_ids: []}
+				Logger.info "supply reducer initializing with action Test Reducer @@INIT, current state = #{inspect(state)}"
+				state
+			_ -> state
+		end
+	end
+end

@@ -39,7 +39,7 @@ defmodule CielStateMachine.RoutingService do
       "distance" => leg["distance"],
       "duration" => leg["duration"],
       "summary" => leg["summary"],
-      "steps" => Enum.map(leg["steps"], &convert_step/1),
+      "steps" => Enum.map(leg["steps"] || [], &convert_step/1),
       "annotation" => convert_annotation(leg["annotation"])
     }
   end
@@ -53,7 +53,7 @@ defmodule CielStateMachine.RoutingService do
       "mode" => step["mode"],
       "instruction" => step["maneuver"]["modifier"],
       "maneuver" => convert_maneuver(step["maneuver"]),
-      "intersections" => Enum.map(step["intersections"], &convert_intersection/1)
+      "intersections" => Enum.map(step["intersections"] || [], &convert_intersection/1)
     }
   end
 
@@ -103,67 +103,4 @@ defmodule CielStateMachine.RoutingService do
       "waypointType" => "break" # Placeholder, as the original doesn't have this field
     }
   end
-
-#  def transform_response(external_response) do
-#    %{
-#      resultCode: "Ok",
-#      result: [
-#        %{
-#          code: "Ok",
-#          routes: [
-#            %{
-#              distance: external_response["distance"],
-#              duration: external_response["duration"],
-#              geometry: external_response["geometry"],
-#              legs: transform_legs(external_response["legs"])
-#            }
-#          ],
-#          waypoints: transform_waypoints(external_response["waypoints"])
-#        }
-#      ]
-#    }
-#  end
-#
-#  defp transform_legs(legs) do
-#    Enum.map(legs, fn leg ->
-#      %{
-#        distance: leg["distance"],
-#        duration: leg["duration"],
-#        summary: leg["summary"],
-#        steps: transform_steps(leg["steps"])
-#      }
-#    end)
-#  end
-#
-#  defp transform_steps(steps) do
-#    Enum.map(steps, fn step ->
-#      %{
-#        distance: step["distance"],
-#        duration: step["duration"],
-#        geometry: step["geometry"],
-#        name: step["name"],
-#        mode: step["mode"],
-#        instruction: step["instruction"],
-#        maneuver: transform_maneuver(step["maneuver"])
-#      }
-#    end)
-#  end
-#
-#  defp transform_maneuver(maneuver) do
-#    %{
-#      location: %{latitude: hd(maneuver["location"]), longitude: List.last(maneuver["location"])},
-#      type: maneuver["type"],
-#      modifier: maneuver["modifier"]
-#    }
-#  end
-#
-#  defp transform_waypoints(waypoints) do
-#    Enum.map(waypoints, fn waypoint ->
-#      %{
-#        name: waypoint["name"],
-#        location: %{latitude: hd(waypoint["location"]), longitude: List.last(waypoint["location"])},
-#        waypointType: "break"  # Assuming all waypoints are of type "break"
-#      }
-#    end)
-#  end
 end

@@ -4,7 +4,7 @@ defmodule Publisher do
 	def start_link do
 		GenServer.start_link(__MODULE__, [], [])
 	end
-  @exchange "gen_server_test_exchange"
+  @exchange "spring_boot_exchange"
 	def init(_opts) do
     {:ok, conn} = Connection.open("amqp://guest:guest@localhost")
     {:ok, chan} = Channel.open(conn)

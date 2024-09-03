@@ -6,8 +6,8 @@ defmodule Consumer do
     GenServer.start_link(__MODULE__, [], [])
   end
 
-  @exchange "gen_server_test_exchange"
-  @queue "gen_server_test_queue"
+  @exchange "spring_boot_exchange"
+  @queue "spring_boot"
   @queue_error "#{@queue}_error"
   def init(_opts) do
     {:ok, conn} = Connection.open("amqp://guest:guest@localhost")
@@ -60,6 +60,6 @@ defmodule Consumer do
   rescue
     exception ->
       :ok = Basic.reject(channel, tag, requeue: not redelivered)
-      IO.puts("Error converting #{payload} to integer")
+      IO.puts("Error converting #{payload} to integer with exception : #{inspect(exception)}")
   end
 end

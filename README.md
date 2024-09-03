@@ -93,4 +93,10 @@ Registry.select(CielStateMachine.ProcessRegistry, [{{:"$1", :_, :_}, [], [:"$1"]
 # Milestone:
 - 지금은 매번 waypoints 을 서비스 api 에서 받지만, waypoints 를 core api 에서 관리를 하거나 최적화를 하게 한다. (차량 상태가 변경되었을수 도 있으니까)
 - 배차가능시간의 유효기간(무효화) 정하기 15초 ~ 1분?
-- 
+-
+
+# Rabbit_MQ - where to use?? 
+
+iex -S mix
+Consumer.start_link
+Publisher.start_link

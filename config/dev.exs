@@ -5,7 +5,7 @@ import Config
 #   url: "http://dev-routing-service:8700"
 
 # business logic
-config :ciel_state_machine, :business_logic, service: :test
+config :ciel_state_machine, :business_logic, service: :default
 
 # RTK signal on/off
 config :ciel_state_machine, :rtk, on: :off

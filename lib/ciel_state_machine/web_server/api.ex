@@ -75,7 +75,7 @@ defmodule CielStateMachine.Api do
       {:error, reason} ->
         conn
         |> put_resp_content_type("application/json")
-        |> send_resp(400, Poison.encode!(%{error: reason}))
+        |> send_resp(400, Poison.encode!(%{"resultCode" => "Error", "error" => reason}))
     end
   end
 

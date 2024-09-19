@@ -9,8 +9,11 @@ defmodule CielStateMachine.LocationService do
 
   def reverse_geocode(latitude, longitude) do
     adapter = get_adapter()
-    adapter.reverse_geocode(latitude, longitude)
-    |> format_reverse_geocode_response()
+
+    case adapter.reverse_geocode(latitude, longitude) do
+      {:ok, result} -> {:ok, format_reverse_geocode_response(result)}
+      {:error, reason} -> {:error, reason}
+    end
   end
 
   def poi_search(keyword, latitude, longitude, radius \\ nil) do
@@ -19,11 +22,19 @@ defmodule CielStateMachine.LocationService do
     IO.puts("Searching for: #{keyword} at (#{latitude}, #{longitude}) with radius #{radius}")
 
     case adapter.poi_search(keyword, latitude, longitude, radius) do
-      {:ok, results} ->
-        IO.puts("Search successful. Found #{length(results)} results.")
-        {:ok, format_poi_search_response(results)}
+      {:ok, %{"resultCode" => "Ok", "result" => results, "meta" => meta}} ->
+        {:ok,
+         %{
+           "resultCode" => "Ok",
+           "result" => results,
+           "meta" => meta
+         }}
+
+      {:ok, response} when is_list(response) ->
+        # Handle responses from adapters that return a list directly
+        {:ok, format_poi_search_response(response)}
+
       {:error, reason} ->
-        IO.puts("Search failed. Reason: #{inspect(reason)}")
         {:error, reason}
     end
   end
@@ -40,12 +51,12 @@ defmodule CielStateMachine.LocationService do
         %{
           "service" => response.service,
           "address" => response.address,
-          "roadAddress" => response.road_address,
-          "buildingName" => response.building_name,
-          "postalCode" => response.postal_code,
+          "roadAddress" => response.roadAddress,
+          "buildingName" => response.buildingName,
+          "postalCode" => response.postalCode,
           "location" => %{
-            "latitude" => response.latitude,
-            "longitude" => response.longitude
+            "latitude" => response.location.latitude,
+            "longitude" => response.location.longitude
           }
         }
       ]
@@ -55,20 +66,21 @@ defmodule CielStateMachine.LocationService do
   defp format_poi_search_response(response) do
     %{
       "resultCode" => "Ok",
-      "result" => Enum.map(response, fn poi ->
-        %{
-          "id" => poi.id,
-          "service" => poi.service,
-          "name" => poi.name,
-          "address" => poi.address,
-          "roadAddress" => poi.road_address,
-          "postalCode" => poi.postal_code,
-          "location" => %{
-            "latitude" => poi.latitude,
-            "longitude" => poi.longitude
+      "result" =>
+        Enum.map(response, fn poi ->
+          %{
+            "id" => poi.id,
+            "service" => poi.service,
+            "name" => poi.name,
+            "address" => poi.address,
+            "roadAddress" => poi.road_address,
+            "postalCode" => poi.postal_code,
+            "location" => %{
+              "latitude" => poi.latitude,
+              "longitude" => poi.longitude
+            }
           }
-        }
-      end)
+        end)
     }
   end
 end

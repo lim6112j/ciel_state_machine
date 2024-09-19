@@ -7,8 +7,10 @@ defmodule CielStateMachine.LocationService.GoogleAdapter do
     case Req.get(url) do
       {:ok, %{status: 200, body: body}} ->
         parse_reverse_geocode_response(body)
-      _ ->
-        {:error, "Failed to reverse geocode"}
+      {:ok, %{status: status}} when status != 200 ->
+        {:error, "Failed to reverse geocode, status: #{status}"}
+      {:error, reason} ->
+        {:error, "Failed to reverse geocode, reason: #{reason}"}
     end
   end
 
@@ -25,9 +27,20 @@ defmodule CielStateMachine.LocationService.GoogleAdapter do
     end
   end
 
+
   defp parse_reverse_geocode_response(body) do
-    # Implement parsing logic for Google's response
-    # Return a map with keys matching the format_reverse_geocode_response function
+    # 예시 파싱 로직 (실제 response에 맞추어 구현 필요)
+    %{"results" => results, "status" => status} = Poison.decode!(body)
+
+    if status == "OK" do
+      address = results
+                |> List.first()
+                |> Map.get("formatted_address", "No address found")
+
+      %{"service" => "google", "address" => address}
+    else
+      {:error, "Reverse geocoding failed with status: #{status}"}
+    end
   end
 
   defp parse_poi_search_response(body) do

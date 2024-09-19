@@ -1,5 +1,6 @@
 defmodule CielStateMachine.LocationService.NaverAdapter do
   @base_url "https://naveropenapi.apigw.ntruss.com/map-reversegeocode/v2"
+  @poi_search_url "https://naveropenapi.apigw.ntruss.com/map-place/v1/search"
 
   def reverse_geocode(latitude, longitude) do
     url = "#{@base_url}/reversegeocode?coords=#{longitude},#{latitude}&output=json"
@@ -17,7 +18,7 @@ defmodule CielStateMachine.LocationService.NaverAdapter do
   end
 
   def poi_search(keyword, latitude, longitude, radius) do
-    url = "#{@base_url}/search?query=#{URI.encode(keyword)}&coord=#{longitude},#{latitude}"
+    url = "#{@poi_search_url}/search?query=#{URI.encode(keyword)}&coord=#{longitude},#{latitude}"
     url = if radius, do: "#{url}&radius=#{radius}", else: url
 
     headers = [
@@ -28,8 +29,10 @@ defmodule CielStateMachine.LocationService.NaverAdapter do
     case Req.get(url, headers: headers) do
       {:ok, %{status: 200, body: body}} ->
         parse_poi_search_response(body)
-      _ ->
-        {:error, "Failed to search POI"}
+      {:ok, %{status: status, body: body}} ->
+        {:error, "API returned status #{status}: #{body}"}
+      {:error, %{reason: reason}} ->
+        {:error, "Request failed: #{reason}"}
     end
   end
 
@@ -39,7 +42,24 @@ defmodule CielStateMachine.LocationService.NaverAdapter do
   end
 
   defp parse_poi_search_response(body) do
-    # Implement parsing logic for Naver's response
-    # Return a list of maps with keys matching the format_poi_search_response function
+    case Jason.decode(body) do
+      {:ok, %{"places" => places}} ->
+        {:ok, Enum.map(places, &format_place/1)}
+      {:ok, %{"errorMessage" => error_message}} ->
+        {:error, error_message}
+      _ ->
+        {:error, "Failed to parse POI search response"}
+    end
+  end
+
+  defp format_place(place) do
+    %{
+      name: place["name"],
+      address: place["address"],
+      road_address: place["roadAddress"],
+      latitude: place["y"],
+      longitude: place["x"],
+      distance: place["distance"]
+    }
   end
 end

@@ -3,6 +3,8 @@ defmodule CielStateMachine.Api do
   alias CielStateMachine.Logger
   alias CielStateMachine.RoutingRequestValidator
   alias CielStateMachine.RoutingService
+  alias CielStateMachine.LocationService
+
 
   plug(:match)
   plug(Plug.Parsers, parsers: [:json], pass: ["application/json"], json_decoder: Poison)
@@ -62,21 +64,40 @@ defmodule CielStateMachine.Api do
   end
 
   get "/v1/location/reverseGeocode" do
-    posX = Map.fetch!(conn.params, "posX")
-    posY = Map.fetch!(conn.params, "posY")
-    url = @test_reverse_geocode_url <> "?posX=" <> posX <> "&posY=" <> posY
-    res = Req.get!(url)
+    latitude = Map.fetch!(conn.params, "latitude")
+    longitude = Map.fetch!(conn.params, "longitude")
 
-    conn
-    |> Plug.Conn.send_resp(200, Poison.encode!(%{response: res.body}))
+    case LocationService.reverse_geocode(latitude, longitude) do
+      {:ok, result} ->
+        conn
+        |> put_resp_content_type("application/json")
+        |> send_resp(200, Poison.encode!(result))
+      {:error, reason} ->
+        conn
+        |> put_resp_content_type("application/json")
+        |> send_resp(400, Poison.encode!(%{error: reason}))
+    end
   end
 
   get "/v1/location/poiSearch" do
-    query = Map.fetch!(conn.params, "address")
-    {:ok, res} = Req.get(@test_geocode_url, params: %{query: query}) # get!, get difference on response type
+    keyword = Map.fetch!(conn.params, "keyword")
+    latitude = Map.fetch!(conn.params, "latitude")
+    longitude = Map.fetch!(conn.params, "longitude")
+    radius = Map.get(conn.params, "radius")
 
-    conn
-    |> Plug.Conn.send_resp(200, Poison.encode!(%{response: res.body}))
+    case LocationService.poi_search(keyword, latitude, longitude, radius) do
+      {:ok, result} ->
+        conn
+        |> put_resp_content_type("application/json")
+        |> send_resp(200, Poison.encode!(result))
+      {:error, reason} ->
+        conn
+        |> put_resp_content_type("application/json")
+        |> send_resp(400, Poison.encode!(%{
+          "resultCode" => "Error",
+          "error" => reason
+        }))
+    end
   end
 
   post "/v1/routing/direction" do

@@ -1,0 +1,69 @@
+:host = localhost:5454
+:apiHost = http://59.23.220.84:8765/state-layer-service/v1
+
+:jType = application/json
+:form = application/x-www-form-urlencoded
+# inavi post api - not working
+POST http://:host/supply
+Content-type: :jType
+{
+		"supply_idx": 2,
+		"vehicle_plate_num": "54 가 1111"
+}
+#
+GET http://:host/supplies?supply_idx=2
+
+# reverse geocoding invavi
+GET https://api-maps.cloud.toast.com/maps/v3.0/appkeys/6oBRFq52nuSZiAZf/addresses?posX=126.9717295&posY=37.55483949
+
+# reverse geocoding api
+GET http://:host/v1/location/reverseGeocode?posX=126.9717295&posY=37.55483949
+
+# inavi geocode
+GET https://api-maps.cloud.toast.com/maps/v3.0/appkeys/6oBRFq52nuSZiAZf/coordinates?query=서울 용산구 동자동 43-205
+
+# geocode
+GET http://:host/v1/location/poiSearch?address=서울 용산구 동자동 43-205
+# api docs poi search
+GET :apiHost/v1/location/poiSearch??keyword=hello&latitude=1&longitude=1
+
+# Geocoding
+GET /map-geocode/v2/geocode?query=%7B%EC%A3%BC%EC%86%8C%7D&coordinate=%7B%EA%B2%80%EC%83%89_%EC%A4%91%EC%8B%AC_%EC%A2%8C%ED%91%9C%7D HTTP/1.1
+Host: naveropenapi.apigw.ntruss.com
+User-Agent: curl/8.2.1
+Accept: */*
+X-NCP-APIGW-API-KEY-ID: fUv0M9LGyl97qj4HSlGrcl691STjdqcAf029rcy0
+X-NCP-APIGW-API-KEY: fUv0M9LGyl97qj4HSlGrcl691STjdqcAf029rcy0
+
+#
+curl -G "https://naveropenapi.apigw.ntruss.com/map-geocode/v2/geocode" \
+    --data-urlencode "query=분당구 불정로 6" \
+    --data-urlencode "coordinate=127.1054328,37.3595963" \
+    -H "X-NCP-APIGW-API-KEY-ID: fUv0M9LGyl97qj4HSlGrcl691STjdqcAf029rcy0" \
+    -H "X-NCP-APIGW-API-KEY: fUv0M9LGyl97qj4HSlGrcl691STjdqcAf029rcy0" -v
+
+#
+GET https://openapi.naver.com/v1/search/local.json
+Host: openapi.naver.com
+X-Naver-Client-Id: fUv0M9LGyl97qj4HSlGrcl691STjdqcAf029rcy0
+X-Naver-Client-Secret: fUv0M9LGyl97qj4HSlGrcl691STjdqcAf029rcy0
+query: 서울 강남구 맛집
+display: 10
+start: 1
+sort: random
+
+
+
+# 카카오 장소 검색하기
+GET https://dapi.kakao.com/v2/local/search/keyword.JSON?query=카페&y=37.54921&x=126.99736
+Authorization: KakaoAK 3763694e6198ae021ceddd22b4fa85ab
+
+# 카카오 리버스 지오코딩
+GET https://dapi.kakao.com/v2/local/geo/coord2address.json?y=37.573235&x=126.809317
+Authorization: KakaoAK 3763694e6198ae021ceddd22b4fa85ab
+
+# /v1/location/reverseGeocode
+GET http://localhost:5454/v1/location/reverseGeocode?latitude=37.57323&longitude=126.809317
+
+# /v1/location/poiSearch
+GET http://localhost:5454/v1/location/poiSearch?latitude=37.54921&longitude=126.99736&keyword=cafe

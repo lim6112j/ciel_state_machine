@@ -100,3 +100,8 @@ Registry.select(CielStateMachine.ProcessRegistry, [{{:"$1", :_, :_}, [], [:"$1"]
 iex -S mix
 Consumer.start_link
 Publisher.start_link
+
+# 기타 관련 문서
+
+## InfluxDB Setup
+- https://nextbullet.atlassian.net/wiki/spaces/AI/pages/1154285569/Coretest

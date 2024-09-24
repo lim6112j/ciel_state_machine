@@ -4,7 +4,7 @@ defmodule Benchmark do
 		num_cars = Keyword.get(opts, :num_cars, 1)
 		concurrency = min(Keyword.get(opts, :concurrency, 10), num_cars)
 		items_per_process = div(num_cars, concurrency)
-		IO.puts "benchmark testing ..."
+		Logger.info "benchmark testing ..."
 		{time, _} =
 			:timer.tc(fn ->
 				0..(concurrency - 1)
@@ -13,7 +13,9 @@ defmodule Benchmark do
 			end)
 		# for checkk log uncomment below
 		# Process.sleep(1000)
-		Logger.info "\n\n #### car dispatch time spent #{time}"
+		throughput = round(num_cars * 1_000_000 /time)
+		Logger.info "\n\n #### car dispatch time spent #{time / 1000} miliseconds"
+		Logger.info "\n\n #### car dispatch throughput: #{throughput} operations/sec \n"
 		{loc_time, _} =
 			:timer.tc(fn ->
 				0..(concurrency  - 1)
@@ -21,8 +23,10 @@ defmodule Benchmark do
 				|> Enum.map(&Task.await(&1, :infinity))
 			end)
 		# for checkk log uncomment below
-		 Process.sleep(5000)
-		Logger.info "\n\n ### car loc updated time spent #{loc_time}"
+		# Process.sleep(5000)
+		update_throughput = round(num_cars * 1_000_000 / loc_time)
+		Logger.info "\n\n ### car loc updated time spent #{loc_time / 1000} milliseconds"
+		Logger.info "\n\n #### car loc updated throughput #{update_throughput} operations/sec \n"
 	end
 	defp performBench(start_item, items_per_process) do
 		Task.async(fn ->

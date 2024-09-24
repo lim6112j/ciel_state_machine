@@ -103,4 +103,4 @@ Publisher.start_link
 
 # Benchmark
 
-mix run -e "Benchmark.run(num_cars: 100, concurrency: 10)"
+mix run -e "Benchmark.run(num_cars: 1000, concurrency: 5)"

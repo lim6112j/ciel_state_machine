@@ -27,6 +27,7 @@ defmodule Benchmark do
 		update_throughput = round(num_cars * 1_000_000 / loc_time)
 		Logger.info "\n\n ### car loc updated time spent #{loc_time / 1000} milliseconds"
 		Logger.info "\n\n #### car loc updated throughput #{update_throughput} operations/sec \n"
+		# sleep for cast methods to finish jobs
 		Process.sleep(10000)
 		{call_time, _} =
 			:timer.tc(fn ->
@@ -73,7 +74,7 @@ defmodule Benchmark do
 	defp get_state(end_item, end_item), do: :ok
 	defp get_state(start_item, end_item) do
 		state = CielStateMachine.Server.get_state(start_item)
-		Logger.info "supply_id : #{start_item}, state: #{inspect(state)}"
+		# Logger.info "supply_id : #{start_item}, state: #{inspect(state)}"
 		get_state(start_item + 1, end_item)
 	end
 

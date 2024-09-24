@@ -103,4 +103,6 @@ Publisher.start_link
 
 # Benchmark
 
-mix run -e "Benchmark.run(num_cars: 1000, concurrency: 5)"
+mix run -e "Benchmark.run(num_cars: 10000, concurrency: 8)"
+
+after run, remove ./persist/*.* and retry

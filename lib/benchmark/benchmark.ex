@@ -1,8 +1,8 @@
 defmodule Benchmark do
   alias CielStateMachine.Logger
 	def run( opts \\ []) do
-		num_cars = Keyword.get(opts, :num_cars, 1)
-		concurrency = min(Keyword.get(opts, :concurrency, 10), num_cars)
+		num_cars = Keyword.get(opts, :num_cars, 10000)
+		concurrency = min(Keyword.get(opts, :concurrency, 8), num_cars)
 		items_per_process = div(num_cars, concurrency)
 		Logger.info "benchmark testing ..."
 		{time, _} =

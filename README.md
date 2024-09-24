@@ -103,6 +103,12 @@ Publisher.start_link
 
 # Benchmark
 
-mix run -e "Benchmark.run(num_cars: 10000, concurrency: 8)"
+set num_cars diviable by concurrency with no remnant
+
+e.g.
+
+mix run -e "Benchmark.run(num_cars: 100, concurrency: 8)" -- BAD
+
+mix run -e "Benchmark.run(num_cars: 100, concurrency: 5)" -- GOOD
 
 after run, remove ./persist/*.* and retry

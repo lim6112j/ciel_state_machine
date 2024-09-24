@@ -27,6 +27,17 @@ defmodule Benchmark do
 		update_throughput = round(num_cars * 1_000_000 / loc_time)
 		Logger.info "\n\n ### car loc updated time spent #{loc_time / 1000} milliseconds"
 		Logger.info "\n\n #### car loc updated throughput #{update_throughput} operations/sec \n"
+		Process.sleep(10000)
+		{call_time, _} =
+			:timer.tc(fn ->
+				0..(concurrency - 1)
+				|> Enum.map(&performGetStateCall(&1 * items_per_process, items_per_process))
+				|> Enum.map(&Task.await(&1, :infinity))
+			end)
+		call_throughput = round(num_cars * 1_000_000 /call_time)
+		Logger.info "\n\n #### car get state call time spent #{call_time / 1000} miliseconds"
+		Logger.info "\n\n #### car get state call  call_throughput: #{call_throughput} operations/sec \n"
+
 	end
 	defp performBench(start_item, items_per_process) do
 		Task.async(fn ->
@@ -49,9 +60,22 @@ defmodule Benchmark do
 	defp update_vehicle(start_item, end_item) do
 		CielStateMachine.Store.dispatch(
 			%{type: "UPDATE_CAR_LOCATION"} ,
-			[{start_item, %{lng: 127, lat: 37}}]
+			[{start_item, %{lng: 127.1, lat: 37.1}}]
 		)
 		update_vehicle(start_item + 1, end_item)
 	end
+
+	defp performGetStateCall(start_item, items_per_process) do
+		Task.async(fn ->
+			get_state(start_item, start_item + items_per_process)
+		end)
+	end
+	defp get_state(end_item, end_item), do: :ok
+	defp get_state(start_item, end_item) do
+		state = CielStateMachine.Server.get_state(start_item)
+		Logger.info "supply_id : #{start_item}, state: #{inspect(state)}"
+		get_state(start_item + 1, end_item)
+	end
+
 
 end

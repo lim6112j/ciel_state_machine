@@ -6,7 +6,7 @@ defmodule CielStateMachine.Logger do
   end
 
   def warn(message, metadata \\ []) do
-    log(:warn, message, metadata)
+    log(:warning, message, metadata)
   end
 
   def error(message, metadata \\ []) do

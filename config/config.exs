@@ -3,7 +3,7 @@ import Config
 config :logger,
        backends: [:console, {LoggerFileBackend, :file_log}]
 
-config :logger, :console,
+config :logger, :console, level: :warning,
        format: "$time $metadata[$level] $message\n",
        metadata: [:request_id, :user_id]
 

@@ -1,9 +1,13 @@
 import Config
+log_level = case (System.get_env("LOG_LEVEL")) do
+							"warning" -> :warning
+							_ -> :info
+						end
 
 config :logger,
        backends: [:console, {LoggerFileBackend, :file_log}]
 
-config :logger, :console, level: :warning,
+config :logger, :console, level: log_level,
        format: "$time $metadata[$level] $message\n",
        metadata: [:request_id, :user_id]
 

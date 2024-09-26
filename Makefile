@@ -36,3 +36,8 @@ test:
 # Clean the project (optional)
 clean:
 	mix clean
+
+# Benchmark
+bench:
+	$(call load_env)
+	mix run -e "Benchmark.run(num_cars: 10000, concurrency: 8, num_updates: 10)"

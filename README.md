@@ -95,11 +95,23 @@ Registry.select(CielStateMachine.ProcessRegistry, [{{:"$1", :_, :_}, [], [:"$1"]
 - 배차가능시간의 유효기간(무효화) 정하기 15초 ~ 1분?
 -
 
-# Rabbit_MQ - where to use?? 
+# Rabbit_MQ - where to use??
 
 iex -S mix
 Consumer.start_link
 Publisher.start_link
+
+# Benchmark
+
+set num_cars diviable by concurrency with no remnant
+
+e.g.
+
+mix run -e "Benchmark.run(num_cars: 100, concurrency: 8)" -- BAD
+
+mix run -e "Benchmark.run(num_cars: 100, concurrency: 5)" -- GOOD
+
+after run, remove ./persist/*.* and retry
 
 # 기타 관련 문서
 ## InfluxDB 사용 예제:

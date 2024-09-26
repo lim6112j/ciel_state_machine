@@ -64,11 +64,11 @@ defmodule Benchmark do
 		update_vehicles(start_item, end_item, updates - 1)
 	end
 
-	defp update_vehicle(end_item, end_item, updates), do: :ok
+	defp update_vehicle(end_item, end_item, _updates), do: :ok
 	defp update_vehicle(start_item, end_item, updates) do
 		CielStateMachine.Store.dispatch(
 			%{type: "UPDATE_CAR_LOCATION"} ,
-			[{start_item, %{lng: 127.1, lat: 37.1}}]
+			[{start_item, %{lng: 127.1 + updates/ 100, lat: 37.1}}]
 		)
 		update_vehicle(start_item + 1, end_item, updates)
 	end

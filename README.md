@@ -102,6 +102,46 @@ Consumer.start_link
 Publisher.start_link
 
 # 기타 관련 문서
+## InfluxDB 사용 예제:
+1. InfluxDB Setup
+직접 InfluxDB 를 설치하여서 테스트를 해볼수있지만, 현재 CoreTest 서버에 실행중입니다. 그래서 localhost로 tunneling 을 통해서 접속할수 있습니다.
+```bash
+ssh -L 8086:localhost:8086 ciel@59.23.220.84 -p 2244
+```
+2. 간단하게 사용 예제
+- write 예제
+```sh
+make iex
+(...)
+iex(1)> CielStateMachine.Persistence.InfluxDB.test_write()
+15:13:09.340 [debug] [write] 1 points
+15:13:09.341 [info] Test write successful
+{:ok, "Test write successful"}
 
-## InfluxDB Setup
+```
+- query 예제
+```sh
+iex(2)> CielStateMachine.Persistence.InfluxDB.test_query()
+15:13:47.862 [debug] [query] from(bucket: "locations")
+  |> range(start: -1h)
+  |> filter(fn: (r) => r._measurement == "locReports")
+  |> filter(fn: (r) => r.deviceId == "supply_id")
+  |> last()
+
+{:ok,
+ %{
+   timestamp: 1727331189238050000,
+   speed: 5.2,
+   latitude: 37.5665,
+   longitude: 126.978,
+   altitude: 38.5,
+   height: 2.0,
+   angle: 45.0,
+   in_path: 1,
+   get_time: 1727331189238050000,
+   device_id: "supply_id"
+ }}
+```
+
+## CoreTest에 설치된 정보 InfluxDB Setup
 - https://nextbullet.atlassian.net/wiki/spaces/AI/pages/1154285569/Coretest

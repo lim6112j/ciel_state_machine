@@ -23,117 +23,6 @@ defmodule CielStateMachine.Persistence.InfluxDB do
       field(:get_time)
     end
   end
-#
-#  def insert_sample_mobble_mod_location do
-#    now = DateTime.utc_now()
-#
-#    data = %MobbleMODLocation{
-#      fields: %{
-#        latitude: 37.5665,
-#        longitude: 126.9780,
-#        altitude: 38.5,
-#        height: 2.0,
-#        speed: 5.2,
-#        angle: 45.0,
-#        in_path: 1,
-#        get_time: DateTime.to_unix(now, :nanosecond)
-#      },
-#      tags: %{
-#        deviceId: "sample-device-001"
-#      },
-#      timestamp: DateTime.to_unix(now, :nanosecond)
-#    }
-#
-#    case __MODULE__.write(data) do
-#      :ok ->
-#        Logger.info("Sample Mobble MOD location data inserted successfully")
-#        {:ok, "Data inserted successfully"}
-#
-#      {:error, reason} ->
-#        Logger.error("Failed to insert sample data: #{inspect(reason)}")
-#        {:error, "Failed to insert data: #{inspect(reason)}"}
-#    end
-#  end
-#
-#  def query_latest_mobble_mod_location do
-#    query = """
-#    from(bucket: "locations")
-#      |> range(start: -1h)
-#      |> filter(fn: (r) => r._measurement == "locReports")
-#      |> last()
-#      |> pivot(rowKey:["_time"], columnKey: ["_field"], valueColumn: "_value")
-#    """
-#
-#    case __MODULE__.query(query, org: "mobble_mod") do
-#      {:ok, results} ->
-#        Logger.info("Query successful: #{inspect(results)}")
-#        {:ok, results}
-#
-#      {:error, reason} ->
-#        Logger.error("Query failed: #{inspect(reason)}")
-#        {:error, "Query failed: #{inspect(reason)}"}
-#    end
-#  end
-
-#  def test_write_location() do
-#    device_id = "device_123"
-#    vehicle_type = "car"
-#    lat = 37.7749
-#    lon = -122.4194
-#    alt = 10.0
-#    height = 1.5
-#    speed = 60.0
-#    angle = 90.0
-#    in_path = true
-#    get_time = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
-#
-#    write_location(
-#      device_id,
-#      vehicle_type,
-#      lat,
-#      lon,
-#      alt,
-#      height,
-#      speed,
-#      angle,
-#      in_path,
-#      get_time
-#    )
-#  end
-#
-#  def write_location(
-#        device_id,
-#        vehicle_type,
-#        lat,
-#        lon,
-#        alt,
-#        height,
-#        speed,
-#        angle,
-#        in_path,
-#        get_time
-#      ) do
-#    now = DateTime.utc_now() |> DateTime.to_unix(:nanosecond)
-#
-#    data = %MobbleMODLocation{
-#      timestamp: now,
-#      fields: %{
-#        latitude: lat,
-#        longitude: lon,
-#        altitude: alt,
-#        height: height,
-#        speed: speed,
-#        angle: angle,
-#        in_path: in_path,
-#        get_time: get_time
-#      },
-#      tags: %{
-#        device_id: device_id
-#      }
-#    }
-#
-#    __MODULE__.write(data, precision: :nanosecond)
-#  end
 
   def query_latest_locations do
     flux_query = """
@@ -193,34 +82,6 @@ defmodule CielStateMachine.Persistence.InfluxDB do
     end
   end
 
-  # def test_http_connection do
-  #   config = config()
-  #   url = "#{config[:scheme]}://#{config[:host]}:#{config[:port]}/ping"
-
-  #   headers = [
-  #     {"Authorization", "Token " <> config[:token]},
-  #     {"Accept", "application/json"}
-  #   ]
-
-  #   case :hackney.request(:get, url, headers, "", []) do
-  #     {:ok, status, response_headers, ref} ->
-  #       {:ok, body} = :hackney.body(ref)
-  #       version = extract_version(response_headers)
-
-  #       {:ok,
-  #        "Connection successful! Status: #{status}, InfluxDB version: #{version}, Body: #{body}"}
-
-  #     {:error, reason} ->
-  #       {:error, "Connection failed: #{inspect(reason)}"}
-  #   end
-  # end
-
-  # defp extract_version(headers) do
-  #   case List.keyfind(headers, "X-Influxdb-Version", 0) do
-  #     {_, version} -> version
-  #     nil -> "unknown"
-  #   end
-  # end
 
   def check_config do
     config = config()
@@ -243,14 +104,6 @@ defmodule CielStateMachine.Persistence.InfluxDB do
 
     case __MODULE__.query(flux_query) do
       {:ok, rsp} ->
-        #        buckets =
-        #          Enum.map(tables, fn %{data: data} ->
-        #            Enum.map(data, fn row ->
-        #              Enum.find(row, fn {k, _v} -> k == "name" end)
-        #            end)
-        #          end)
-        #          |> List.flatten()
-        #          |> Enum.map(fn {_, v} -> v end)
         Logger.info("rsp #{rsp}")
         {:ok, rsp}
 

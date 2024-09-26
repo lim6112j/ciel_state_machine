@@ -21,6 +21,7 @@ defmodule CielStateMachine.Supervisor do
       CielStateMachine.ProcessFactory,
       CielStateMachine.Api,
 			{CielStateMachine.Store, service},
+      CielStateMachine.Persistence.InfluxDB,
     ]
 		case rtkOn do
 			:on ->

@@ -27,6 +27,14 @@ config :ciel_state_machine,
 config :ciel_state_machine, :dispatch_engine_service,
        url: System.get_env("DISPATCH_ENGINE_SERVICE_URL") || "http://localhost:8700"
 
+# TODO change token with infra during production
+config :ciel_state_machine, CielStateMachine.Persistence.InfluxDB,
+       auth: [method: :token, token: System.get_env("INFLUXDB_TOKEN") || "my-super-secret-auth-token"],
+       bucket: System.get_env("INFLUXDB_BUCKET") || "locations",
+       org: System.get_env("INFLUXDB_ORG") || "myorg",
+       host: System.get_env("INFLUXDB_HOST") || "localhost",
+       version: :v2
+
 # Import environment specific config
 if config_env() in [:dev, :test, :prod] do
   import_config "#{config_env()}.exs"

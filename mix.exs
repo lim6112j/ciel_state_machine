@@ -45,6 +45,7 @@ defmodule CielStateMachine.MixProject do
 			{:gen_stage, "~> 1.2.1"},
       {:logger_file_backend, "~> 0.0.14"},
 			{:amqp, "~> 3.3"},
+      {:instream, "~> 2.2.1"},
     ]
   end
 	def aliases do

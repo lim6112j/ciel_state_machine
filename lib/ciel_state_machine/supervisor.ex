@@ -22,7 +22,16 @@ defmodule CielStateMachine.Supervisor do
       CielStateMachine.Api,
 			{CielStateMachine.Store, service},
       CielStateMachine.Persistence.InfluxDB,
+      CielStateMachine.InfluxSyncServer,
     ]
+
+    children =
+      if should_start_dummy_generator?() do
+        children ++ [CielStateMachine.Persistence.DummyDataGenerator]
+      else
+        children
+      end
+
 		case rtkOn do
 			:on ->
 				new_children = [CielStateMachine.Rtk | children]
@@ -30,5 +39,10 @@ defmodule CielStateMachine.Supervisor do
 			_ ->
 				Supervisor.init(children, strategy: :one_for_one)
 		end
+  end
+
+  defp should_start_dummy_generator? do
+    Application.get_env(:ciel_state_machine, :dummy_influx, [])[:enabled] == true &&
+      Mix.env() in [:dev, :test]
   end
 end

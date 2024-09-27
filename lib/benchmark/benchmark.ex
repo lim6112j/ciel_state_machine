@@ -80,7 +80,7 @@ defmodule Benchmark do
 	end
 	defp get_state(end_item, end_item), do: :ok
 	defp get_state(start_item, end_item) do
-		state = CielStateMachine.Server.get_state(start_item)
+		_state = CielStateMachine.Server.get_state(start_item)
 		# Logger.warn "supply_id : #{start_item}, state: #{inspect(state)}"
 		get_state(start_item + 1, end_item)
 	end

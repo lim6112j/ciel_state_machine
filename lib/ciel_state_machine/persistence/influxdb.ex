@@ -1,4 +1,5 @@
 defmodule CielStateMachine.Persistence.InfluxDB do
+  require Logger
   #
   use Instream.Connection, otp_app: :ciel_state_machine
   require Logger
@@ -81,8 +82,8 @@ defmodule CielStateMachine.Persistence.InfluxDB do
         Logger.error("Health check failed. Reason: #{inspect(reason)}")
         {:error, "InfluxDB health check failed: #{inspect(reason)}"}
       unexpected ->
-        Logger.warn("Unexpected response format: #{inspect(unexpected)}")
-        {:error, "Unexpected response format"}
+        Logger.warning("Unexpected response format: #{inspect(unexpected)}")
+        {:error, :unexpected_response}
     end
   end
 
@@ -167,9 +168,8 @@ defmodule CielStateMachine.Persistence.InfluxDB do
           {:error, "Query failed: #{inspect(reason)}"}
 
         unexpected ->
-          Logger.warn("Unexpected response format: #{inspect(unexpected)}", unexpected: unexpected)
-          {:error, "Unexpected response format"}
-
+          Logger.warning("Unexpected response format: #{inspect(unexpected)}", unexpected: unexpected)
+          {:error, :unexpected_response}
     end
   end
 
@@ -207,35 +207,10 @@ defmodule CielStateMachine.Persistence.InfluxDB do
         {:error, "Query failed: #{inspect(reason)}"}
 
       unexpected ->
-        Logger.warn("Unexpected response format: #{inspect(unexpected)}")
-        {:error, "Unexpected response format"}
+        Logger.warning("Unexpected response format: #{inspect(unexpected)}")
+        {:error, :unexpected_response}
     end
   end
-
-  defp parse_query_result(data) do
-    data
-    |> List.flatten()
-    |> Enum.group_by(fn item -> item["deviceId"] end)
-    |> Enum.map(fn {device_id, items} ->
-      latest_item = Enum.max_by(items, fn item -> item["_time"] end)
-      fields = Enum.reduce(items, %{}, fn item, acc ->
-        Map.put(acc, item["_field"], item["_value"])
-      end)
-      Map.merge(fields, %{
-        device_id: device_id,
-        timestamp: format_timestamp(latest_item["_time"])
-      })
-    end)
-  end
-
-  defp format_timestamp(timestamp) when is_binary(timestamp) do
-    case DateTime.from_iso8601(timestamp) do
-      {:ok, datetime, _offset} -> DateTime.to_unix(datetime, :millisecond)
-      _ -> timestamp
-    end
-  end
-
-  defp format_timestamp(timestamp), do: timestamp
 
   def write_location(device_id, state) do
     now = DateTime.utc_now()

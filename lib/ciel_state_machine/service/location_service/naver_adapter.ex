@@ -36,7 +36,7 @@ defmodule CielStateMachine.LocationService.NaverAdapter do
     end
   end
 
-  defp parse_reverse_geocode_response(body) do
+  defp parse_reverse_geocode_response(_body) do
     # Implement parsing logic for Naver's response
     # Return a map with keys matching the format_reverse_geocode_response function
   end

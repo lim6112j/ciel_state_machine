@@ -16,7 +16,8 @@ config :logger, :file_log,
        level: :info,
        format: "$time $metadata[$level] $message\n",
        metadata: [:request_id, :user_id]
-
+config :ciel_state_machine,
+	     worker_pool_size: 8
 config :ciel_state_machine,
        map_service: "kakao", # or "google" or "naver"
        naver_map_client_id: System.get_env("NAVER_CLIENT_ID") || "NAVER_CLIENT_ID",

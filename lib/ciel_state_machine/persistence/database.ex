@@ -2,17 +2,18 @@ defmodule CielStateMachine.Database do
 	use GenServer
   alias CielStateMachine.Logger
 
-	@pool_size 8
 	@db_folder "./persist"
 	def child_spec(_) do
 		File.mkdir_p!(@db_folder)
 		:poolboy.child_spec(__MODULE__, poolboy_config(), [@db_folder])
 	end
 	defp poolboy_config do
+		pool_size = Application.fetch_env!(:ciel_state_machine, :worker_pool_size)
+		Logger.info("worker pool size : #{pool_size}")
 		[
 			name: {:local, __MODULE__},
 			worker_module: CielStateMachine.DatabaseWorker,
-			size: @pool_size
+			size: pool_size
 		]
 	end
 

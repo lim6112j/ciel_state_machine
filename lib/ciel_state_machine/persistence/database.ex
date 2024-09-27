@@ -2,7 +2,7 @@ defmodule CielStateMachine.Database do
 	use GenServer
   alias CielStateMachine.Logger
 
-	@pool_size 3
+	@pool_size 8
 	@db_folder "./persist"
 	def child_spec(_) do
 		File.mkdir_p!(@db_folder)

@@ -29,7 +29,7 @@ defmodule Benchmark do
 		Logger.warn "\n\n ### car loc updated time spent #{loc_time / 1000} milliseconds"
 		Logger.warn "\n\n #### car loc updated throughput #{update_throughput} operations/sec \n"
 		# sleep for cast methods to finish jobs
-		Process.sleep(10000)
+		Process.sleep(3000)
 		{call_time, _} =
 			:timer.tc(fn ->
 				0..(concurrency - 1)

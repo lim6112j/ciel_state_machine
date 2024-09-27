@@ -18,11 +18,11 @@ defmodule Consumer do
     {:ok, chan}
   end
 
-  def handle_info({:basic_consume_ok, %{consumer_tag: consumer_tag}}, chan) do
+  def handle_info({:basic_consume_ok, %{consumer_tag: _consumer_tag}}, chan) do
     {:noreply, chan}
   end
 
-  def handle_info({:basic_cancel, %{consumer_tag: consumer_tag}}, chan) do
+  def handle_info({:basic_cancel, %{consumer_tag: _consumer_tag}}, chan) do
     {:stop, :normal, chan}
   end
 

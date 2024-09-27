@@ -2,7 +2,7 @@ defmodule CielStateMachine.Persistence.DummyDataGenerator do
   use GenServer
   require Logger
   alias CielStateMachine.Persistence.InfluxDB
-  alias CielStateMachine.Persistence.InfluxDB.MobbleMODLocation
+  # alias CielStateMachine.Persistence.InfluxDB.MobbleMODLocation
 
   def start_link(opts \\ []) do
     GenServer.start_link(__MODULE__, opts, name: __MODULE__)

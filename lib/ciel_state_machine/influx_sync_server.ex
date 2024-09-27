@@ -25,6 +25,24 @@ defmodule CielStateMachine.InfluxSyncServer do
   end
 
   @impl true
+  def handle_info(:update_locations, state) do
+    Logger.debug("Updating car locations")
+    case InfluxDB.query_latest_locations() do
+      {:ok, []} ->
+        Logger.debug("No location updates found")
+      {:ok, locations} ->
+        updates = Enum.map(locations, fn location ->
+          {location.device_id, %{lng: location.longitude, lat: location.latitude}}
+        end)
+        Store.dispatch(%{type: "UPDATE_CAR_LOCATION"}, updates)
+      {:error, reason} ->
+        Logger.error("Failed to fetch location updates: #{inspect(reason)}")
+    end
+    schedule_update()
+    {:noreply, state}
+  end
+
+  @impl true
   def handle_continue(:initialize, state) do
     Logger.info("Fetching initial data from InfluxDB")
     case InfluxDB.query_latest_locations() do
@@ -42,24 +60,6 @@ defmodule CielStateMachine.InfluxSyncServer do
         Logger.error("Failed to fetch initial data: #{inspect(reason)}")
         {:stop, :initialization_failed, state}
     end
-  end
-
-  @impl true
-  def handle_info(:update_locations, state) do
-    Logger.debug("Updating car locations")
-    case InfluxDB.query_latest_locations() do
-      {:ok, []} ->
-        Logger.debug("No location updates found")
-      {:ok, locations} ->
-        updates = Enum.map(locations, fn location ->
-          {location.device_id, %{lng: location.longitude, lat: location.latitude}}
-        end)
-        Store.dispatch(%{type: "UPDATE_CAR_LOCATION"}, updates)
-      {:error, reason} ->
-        Logger.error("Failed to fetch location updates: #{inspect(reason)}")
-    end
-    schedule_update()
-    {:noreply, state}
   end
 
   defp schedule_update do

@@ -1,5 +1,6 @@
 defmodule CielStateMachine.LocationService.GoogleAdapter do
   @base_url "https://maps.googleapis.com/maps/api"
+  alias CielStateMachine.Logger
 
   def reverse_geocode(latitude, longitude) do
     url = "#{@base_url}/geocode/json?latlng=#{latitude},#{longitude}&key=#{Application.get_env(:ciel_state_machine, :google_maps_api_key)}"
